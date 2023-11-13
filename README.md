@@ -56,8 +56,7 @@ python bot.py <Devman API token> <ChatID>
 
 ## Существующий экземпляр бота
 
-Вы можете ознакомиться с полностью работающим экземпляром бота [**
-Devman review checker**](https://telegram.me/dvmnAPIbot)
+Вы можете ознакомиться с полностью работающим экземпляром бота [**Devman review checker**](https://telegram.me/dvmnAPIbot)
 
 ## Цели проекта
 
