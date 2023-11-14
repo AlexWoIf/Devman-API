@@ -61,18 +61,16 @@ def start(update: Update, context: CallbackContext):
 
 def review_list(update, context):
     token = context.user_data.get('token', None)
-    subprocess.Popen(
-        f'python ./review_list.py {token} {update.effective_chat.id}',
-        shell=True,
-    )
+    subprocess.Popen([
+        'python', 'review_list.py', token, str(update.effective_chat.id),
+    ])
 
 
 def start_polling(update, context):
     token = context.user_data.get('token', None)
-    proc = subprocess.Popen(
-        f'python ./polling.py {token} {update.effective_chat.id}',
-        shell=True,
-    )
+    proc = subprocess.Popen([
+        'python', 'polling.py', token, str(update.effective_chat.id),
+    ])
     context.user_data['polling'] = {
         "started_at": datetime.now(), "proc": proc,
     }
