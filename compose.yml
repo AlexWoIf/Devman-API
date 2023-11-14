@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+
+  dvmn_bot:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: dvmn_bot
+    restart: "always"
+    volumes:
+      - ./:/usr/src/app
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+
+networks:
+  default:
+    name: webapp_backend
+    external: true
+
