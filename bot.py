@@ -85,7 +85,7 @@ def polling(update, context):
     polling = context.user_data.get('polling', None)
     if polling:
         stopped = polling["proc"].poll()
-        if stopped:
+        if not stopped==None:
             polling = None
 
     logging.debug(polling)
