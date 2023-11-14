@@ -29,7 +29,7 @@ pip install -r requirements.txt
 Можно запусть бота для получения списка работ командой:
 
 ```sh
-python settings.py <Devman API token> <ChatID>
+python review_list.py <Devman API token> <ChatID>
 ```
 
 Можно запустить наблюдение за изменением статуса проверки работ:
