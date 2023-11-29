@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  dvmn_bot:
+    build:
+      context: .
+      target: production
+    container_name: dvmn_bot
+    restart: "always"
+    volumes:
+      - ./:/usr/src/app
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
