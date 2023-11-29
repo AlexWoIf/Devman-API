@@ -43,7 +43,7 @@ def start(update: Update, context: CallbackContext):
     if len(context.args):
         token = context.args[0]
         if check_dvmn_token(token):
-            send_help(update, context)
+            send_help_msg(update, context)
             context.bot.delete_message(
                 update.effective_chat.id,
                 update.message.message_id,
@@ -113,7 +113,7 @@ def handle_polling_commands(update, context):
     )
 
 
-def send_help(update, context):
+def send_help_msg(update, context):
     context.bot.send_message(
         update.effective_chat.id,
         text='Вы предоставили рабочий ключ от Девман API.\n'
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         level=getattr(logging, LOG_LEVEL.upper(), None),
-        filename=LOG_FILE,
+        filename=LOG_FILE, encoding="UTF-8",
     )
 
     updater = Updater(
@@ -165,7 +165,8 @@ if __name__ == '__main__':
             STARTED: [
                 CommandHandler('list', get_review_list),
                 CommandHandler('polling', handle_polling_commands),
-                MessageHandler(Filters.text & (~Filters.command), help),
+                MessageHandler(Filters.text & (~Filters.command),
+                               send_help_msg),
             ],
         },
         fallbacks=[CommandHandler('forget', forget_token), ]
