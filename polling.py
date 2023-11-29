@@ -63,15 +63,17 @@ if __name__ == '__main__':
                         help='User telegram chat id to send final answer')
     args = parser.parse_args()
     tg_chat_id = args.tg_chat_id
-
-    changes = start_devman_polling(args.dvmn_token)
-
-    message = "Статус некоторых проверок изменился! " \
-              "Детали из ответа сервера:\n"
-    for attempt in changes["new_attempts"]:
-        message += f'Название урока: {attempt["lesson_title"]}\n'
-        message += f'Ссылка на урок: {attempt["lesson_url"]}\n'
-        message += f'Задание {"не" if attempt["is_negative"] else ""} принято'
-
     tg_bot = telegram.Bot(token=f'{TG_BOT_TOKEN}')
-    tg_bot.send_message(text=message, chat_id=tg_chat_id)
+
+    while True:
+        changes = start_devman_polling(args.dvmn_token)
+
+        message = "Статус некоторых проверок изменился! " \
+                  "Детали из ответа сервера:\n"
+        for attempt in changes["new_attempts"]:
+            message += f'Название урока: {attempt["lesson_title"]}\n'
+            message += f'Ссылка на урок: {attempt["lesson_url"]}\n'
+            message += f'Задание {"не" if attempt["is_negative"] else ""}' \
+                       'принято'
+
+        tg_bot.send_message(text=message, chat_id=tg_chat_id)
