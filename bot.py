@@ -11,14 +11,8 @@ from telegram.ext import (
     Filters,
 )
 from datetime import datetime
-from settings import LOG_LEVEL, BOT_TOKEN, REVIEWS_URL
+from settings import LOG_LEVEL, LOG_FILE, TG_BOT_TOKEN, REVIEWS_URL
 
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=getattr(logging, LOG_LEVEL.upper(), None),
-    filename='bot.log',
-)
 
 STARTED = 1
 
@@ -49,34 +43,36 @@ def start(update: Update, context: CallbackContext):
     if len(context.args):
         token = context.args[0]
         if check_dvmn_token(token):
-            help(update, context)
+            send_help(update, context)
             context.bot.delete_message(
                 update.effective_chat.id,
                 update.message.message_id,
             )
-            context.user_data['token'] = token
+            context.user_data['dvmn_token'] = token
         return STARTED
     request_dvmn_token(update, context)
 
 
-def review_list(update, context):
-    token = context.user_data.get('token', None)
-    subprocess.Popen([
-        'python', 'review_list.py', token, str(update.effective_chat.id),
-    ])
+def get_review_list(update, context):
+    token = context.user_data.get('dvmn_token', None)
+    subprocess.Popen(
+        ['python', 'review_list.py', token, str(update.effective_chat.id),],
+        shell=True,
+    )
 
 
 def start_polling(update, context):
-    token = context.user_data.get('token', None)
-    proc = subprocess.Popen([
-        'python', 'polling.py', token, str(update.effective_chat.id),
-    ])
+    token = context.user_data.get('dvmn_token', None)
+    proc = subprocess.Popen(
+        ['python', 'polling.py', token, str(update.effective_chat.id),],
+        shell=True,
+    )
     context.user_data['polling'] = {
         "started_at": datetime.now(), "proc": proc,
     }
 
 
-def polling(update, context):
+def handle_polling_commands(update, context):
     if len(context.args):
         subcommand = context.args[0]
     else:
@@ -85,7 +81,7 @@ def polling(update, context):
     polling = context.user_data.get('polling', None)
     if polling:
         stopped = polling["proc"].poll()
-        if not stopped==None:
+        if stopped is not None:
             polling = None
 
     logging.debug(polling)
@@ -117,7 +113,7 @@ def polling(update, context):
     )
 
 
-def help(update, context):
+def send_help(update, context):
     context.bot.send_message(
         update.effective_chat.id,
         text='Вы предоставили рабочий ключ от Девман API.\n'
@@ -131,8 +127,8 @@ def help(update, context):
     return
 
 
-def forget(update, context):
-    context.user_data.pop(['token'], None)
+def forget_token(update, context):
+    context.user_data.pop(['dvmn_token'], None)
     context.bot.send_message(
                 update.effective_chat.id,
                 text='Мы удалили ваш ключ от API Девман\.'
@@ -145,8 +141,14 @@ def forget(update, context):
 
 # функция main
 if __name__ == '__main__':
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=getattr(logging, LOG_LEVEL.upper(), None),
+        filename=LOG_FILE,
+    )
+
     updater = Updater(
-                    token=f'{BOT_TOKEN}',
+                    token=f'{TG_BOT_TOKEN}',
                     use_context=True,
     )
     dispatcher = updater.dispatcher
@@ -161,12 +163,12 @@ if __name__ == '__main__':
         ],
         states={
             STARTED: [
-                CommandHandler('list', review_list),
-                CommandHandler('polling', polling),
+                CommandHandler('list', get_review_list),
+                CommandHandler('polling', handle_polling_commands),
                 MessageHandler(Filters.text & (~Filters.command), help),
             ],
         },
-        fallbacks=[CommandHandler('forget', forget), ]
+        fallbacks=[CommandHandler('forget', forget_token), ]
     )
     dispatcher.add_handler(conv_handler)
 

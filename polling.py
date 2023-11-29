@@ -2,23 +2,17 @@ import logging
 import requests
 from time import sleep
 import telegram
-from settings import LOG_LEVEL, BOT_TOKEN, POLLING_URL
+from settings import LOG_LEVEL, LOG_FILE, TG_BOT_TOKEN, POLLING_URL
 import argparse
 
 
 CONNECTION_ERROR_DELAY = 90
 MAX_TIMEOUT_COUNT = 3
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=getattr(logging, LOG_LEVEL.upper(), None),
-    filename='bot.log',
-)
 
-
-def devman_polling(token):
+def start_devman_polling(dvmn_token: str):
     params = {}
-    headers = {"Authorization": f"Token {token}", }
+    headers = {"Authorization": f"Token {dvmn_token}", }
     timeout_count = 0
     while True:
         logging.info(f"Запрашиваем наличие изменений. {params}")
@@ -54,17 +48,23 @@ def devman_polling(token):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=getattr(logging, LOG_LEVEL.upper(), None),
+        filename=LOG_FILE,
+    )
+
     parser = argparse.ArgumentParser(
         description='Для запуска необходио передать ключ Девман API и ID '
                     'чата для отправки полученных ответов')
-    parser.add_argument('token', type=str,
+    parser.add_argument('dvmn_token', type=str,
                         help='Devman API key (token)')
-    parser.add_argument('chat_id', type=int,
+    parser.add_argument('tg_chat_id', type=int,
                         help='User telegram chat id to send final answer')
     args = parser.parse_args()
-    chat_id = args.chat_id
+    tg_chat_id = args.tg_chat_id
 
-    changes = devman_polling(args.token)
+    changes = start_devman_polling(args.dvmn_token)
 
     message = "Статус некоторых проверок изменился! " \
               "Детали из ответа сервера:\n"
@@ -73,5 +73,5 @@ if __name__ == '__main__':
         message += f'Ссылка на урок: {attempt["lesson_url"]}\n'
         message += f'Задание {"не" if attempt["is_negative"] else ""} принято'
 
-    bot = telegram.Bot(token=f'{BOT_TOKEN}')
-    bot.send_message(text=message, chat_id=chat_id)
+    tg_bot = telegram.Bot(token=f'{TG_BOT_TOKEN}')
+    tg_bot.send_message(text=message, chat_id=tg_chat_id)
