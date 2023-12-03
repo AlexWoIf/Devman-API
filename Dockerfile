@@ -18,6 +18,6 @@ FROM develop as prod
 
 WORKDIR /usr/src/app
 
-COPY ./ ./
+COPY . .
 
 CMD [ "python", "./bot.py" ]
