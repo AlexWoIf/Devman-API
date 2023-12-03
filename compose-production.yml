@@ -7,7 +7,8 @@ services:
       target: production
     container_name: dvmn_bot
     restart: "always"
+    env_file:
+      - .env
     volumes:
-      - ./:/usr/src/app
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro

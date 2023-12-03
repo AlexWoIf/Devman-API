@@ -57,7 +57,7 @@ def get_review_list(update, context):
     token = context.user_data.get('dvmn_token', None)
     subprocess.Popen(
         ['python', 'review_list.py', token, str(update.effective_chat.id),],
-        shell=True,
+        shell=False,
     )
 
 
@@ -65,7 +65,7 @@ def start_polling(update, context):
     token = context.user_data.get('dvmn_token', None)
     proc = subprocess.Popen(
         ['python', 'polling.py', token, str(update.effective_chat.id),],
-        shell=True,
+        shell=False,
     )
     context.user_data['polling'] = {
         "started_at": datetime.now(), "proc": proc,
