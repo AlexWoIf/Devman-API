@@ -1,9 +1,6 @@
 # develop image contains the dependencies and no application code
 FROM python:3.10 as develop
 
-RUN apt -y update
-RUN apt -y upgrade
-
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
