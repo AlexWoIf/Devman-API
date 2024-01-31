@@ -1,2 +1,7 @@
-# Ignore all hidden file and folders
 .*
+*.md
+compose*
+Dockerfile*
+*.jpg
+
+**/__pycache__/*
