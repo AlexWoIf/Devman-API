@@ -4,4 +4,5 @@ compose*
 Dockerfile*
 *.jpg
 
+temp/
 **/__pycache__/*
