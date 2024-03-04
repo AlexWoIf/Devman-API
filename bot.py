@@ -144,7 +144,6 @@ if __name__ == '__main__':
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         level=getattr(logging, LOG_LEVEL.upper(), None),
-        filename=LOG_FILE, encoding="UTF-8",
     )
 
     updater = Updater(
